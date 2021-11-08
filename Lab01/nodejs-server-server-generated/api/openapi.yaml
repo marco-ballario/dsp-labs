@@ -1,0 +1,135 @@
+openapi: 3.0.1
+info:
+  title: ToDo Manager API
+  description: API design for the ToDo Manager application
+  version: "1.0"
+servers:
+- url: /
+paths:
+  /tasks/public:
+    get:
+      tags:
+      - public
+      description: Read all the public tasks
+      operationId: tasksPublicGET
+      parameters: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/task'
+      x-swagger-router-controller: Public
+  /tasks/public/{id}:
+    get:
+      tags:
+      - task
+      description: Read a specific public task
+      operationId: tasksPublicIdGET
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/task'
+        "404":
+          description: Not found
+      x-swagger-router-controller: Task
+  /users:
+    get:
+      tags:
+      - users
+      description: Read all the users
+      operationId: usersGET
+      parameters: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+      x-swagger-router-controller: Users
+components:
+  schemas:
+    user:
+      required:
+      - email
+      - id
+      - password
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          maxLength: 20
+          minLength: 6
+          type: string
+      example:
+        password: password
+        name: name
+        id: 0
+        email: ""
+    task:
+      required:
+      - description
+      - id
+      type: object
+      properties:
+        id:
+          type: integer
+        description:
+          maxLength: 160
+          type: string
+        important:
+          type: boolean
+          default: false
+        private:
+          type: boolean
+          default: true
+        projects:
+          type: array
+          items:
+            type: string
+            enum:
+            - Personal
+            - WA1_Project
+            - WA2_Project
+            - DSP_Project
+        deadline:
+          type: string
+          format: date
+        completed:
+          type: boolean
+          default: false
+        owner:
+          type: integer
+        assignedTo:
+          type: integer
+      example:
+        important: false
+        owner: 6
+        private: true
+        projects:
+        - ""
+        - ""
+        description: description
+        id: 0
+        completed: false
+        deadline: 2000-01-23
+        assignedTo: 1

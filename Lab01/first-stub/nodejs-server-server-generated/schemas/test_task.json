@@ -1,0 +1,16 @@
+{
+    "$schema": "./task.json",
+    "id": 5,
+    "description": "ciao",
+    "important": true,
+    "private": false,
+    "projects": [
+        "DSP_Project",
+        "DSP_Project",
+        "DSP_Project"
+    ],
+    "deadline": "2020-10-25",
+    "completed": true,
+    "owner": 3,
+    "assignedTo": 5
+}

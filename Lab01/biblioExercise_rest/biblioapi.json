@@ -1,0 +1,483 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Biblio API",
+        "description": "An API for the Biblio sample service",
+        "version": "1.0"
+    },
+    "components": {
+        "schemas": {
+            "item": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "subtitle": {
+                        "type": "string"
+                    },
+                    "authors": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "minItems": 1
+                    },
+                    "citing": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "cited": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "self": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "extension": {
+                        "type": "object",
+                        "properties": {
+                            "article": {
+                                "type": "object",
+                                "properties": {
+                                    "publishedIn": {
+                                        "type": "string",
+                                        "format": "uri"
+                                    }
+                                },
+                                "required": [
+                                    "publishedIn"
+                                ]
+                            },
+                            "book": {
+                                "type": "object",
+                                "properties": {
+                                    "isbn": {
+                                        "$ref": "#/components/schemas/isbn"
+                                    },
+                                    "year": {
+                                        "type": "integer"
+                                    },
+                                    "publisher": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "isbn",
+                                    "year"
+                                ]
+                            }
+                        },
+                        "maxProperties": 1,
+                        "minProperties": 1
+                    }
+                },
+                "required": [
+                    "title",
+                    "authors",
+                    "extension"
+                ]
+            },
+            "issn": {
+                "type": "string",
+                "pattern": "[0-9]{4}-[0-9]{3}[0-9xX]"
+            },
+            "isbn": {
+                "type": "string",
+                "pattern": "([0-9]{13})|([0-9]{9}([0-9]|X))"
+            },
+            "items": {
+                "type": "object",
+                "properties": {
+                    "totalPages": {
+                        "type": "integer"
+                    },
+                    "pageNumber": {
+                        "type": "integer"
+                    },
+                    "pageItems": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/item"
+                        }
+                    },
+                    "next": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "self": {
+                        "type": "string",
+                        "format": "uri"
+                    }
+                }
+            },
+            "journal": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string"
+                    },
+                    "publisher": {
+                        "type": "string"
+                    },
+                    "issn": {
+                        "$ref": "#/components/schemas/issn"
+                    },
+                    "issues": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "self": {
+                        "type": "string",
+                        "format": "uri"
+                    }
+                },
+                "required": [
+                    "title",
+                    "issn"
+                ]
+            },
+            "issue": {
+                "type": "object",
+                "properties": {
+                    "year": {
+                        "type": "integer"
+                    },
+                    "number": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "journal": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "self": {
+                        "type": "string",
+                        "format": "uri"
+                    }
+                },
+                "required": [
+                    "year",
+                    "number",
+                    "journal"
+                ]
+            },
+            "issues": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/issue"
+                }
+            },
+            "journals": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/journal"
+                }
+            },
+            "biblio": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "journals": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "self": {
+                        "type": "string",
+                        "format": "uri"
+                    }
+                },
+                "required": [
+                    "items",
+                    "journals"
+                ]
+            }
+        }
+    },
+    "paths": {
+        "/biblio": {
+            "get": {
+                "tags": ["biblio"],
+                "description": "Read the main resource",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "schema":{
+                                    "$ref":"#/components/schemas/biblio"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/biblio/items": {
+          "get": {
+              "tags": ["items"],
+              "description": "Read/search the items",
+              "parameters": [{  "name": "keyword",
+                                "schema": {"type":"string"},
+                                "in": "query"
+                              },
+                              {
+                                "name": "type",
+                                "schema": {
+                                  "type":"string",
+                                  "enum": ["article","book"]
+                                },
+                                "in": "query"
+                              },
+                              {  "name": "beforeInclusive",
+                                "schema": {"type":"string", "format": "date"},
+                                "in": "query"
+                              },
+                              {  "name": "afterInclusive",
+                                "schema": {"type":"string", "format": "date"},
+                                "in": "query"
+                              }
+                            ],
+              "responses": {
+                  "200": {
+                      "description": "OK",
+                      "content": {
+                          "application/json":{
+                              "schema":{
+                                  "$ref":"#/components/schemas/items"
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+          "post": {
+            "tags": ["items"],
+            "description": "Create an item",
+            "parameters": [],
+            "requestBody":{
+              "content": {
+                "application/json":{
+                  "schema":{"$ref":"#/components/schemas/item"}
+                  }
+                }
+            },
+            "responses": {
+                "201": {
+                    "description": "Created",
+                    "content": {
+                        "application/json":{
+                            "schema":{
+                                "$ref":"#/components/schemas/item"
+                            }
+                        }
+                    },
+                    "headers": {
+                        "Location":{
+                            "schema":{ "type": "string", "format": "uri"},
+                            "description": "The URI of the new resource just created"
+                        }
+                    }
+                },
+                "400": {
+                    "description": "Bad Request",
+                    "content": {
+                        "text/plain": {
+                            "schema":{ "type": "string", "description": "The reason for the bad request"}
+                        }
+                    }
+                }
+            }
+          }
+        },
+        "/biblio/items/{id}": {
+          "parameters": [
+            { "name": "id",
+              "schema": {"type": "integer"},
+              "in": "path",
+              "required": true
+            }
+          ],
+          "get": {
+              "tags": ["item"],
+              "description": "Read the item",
+              "responses": {
+                  "200": {
+                      "description": "OK",
+                      "content": {
+                          "application/json":{
+                              "schema":{
+                                  "$ref":"#/components/schemas/item"
+                              }
+                          }
+                      }
+                  },
+                  "404": {
+                    "description": "Not found"
+                  }
+              }
+          },
+          "put": {
+            "tags": ["item"],
+            "description": "Update an item",
+            "requestBody":{
+              "content": {
+                "application/json":{
+                  "schema":{"$ref":"#/components/schemas/item"}
+                  }
+                }
+            },
+            "responses": {
+                "204": {
+                  "description": "No content"
+                },
+                "400": {
+                    "description": "Bad Request",
+                    "content": {
+                        "text/plain": {
+                            "schema":{ "type": "string", "description": "The reason for the bad request"}
+                        }
+                    }
+                },
+                "404": {
+                  "description": "Not found"
+                }
+            }
+          },
+          "delete": {
+            "tags": ["item"],
+            "description": "Delete an item",
+            "responses": {
+                "204": {
+                  "description": "No content"
+                },
+                "404": {
+                  "description": "Not found"
+                }
+            }
+          }
+        },
+        "/biblio/items/{id}/citing": {
+          "parameters": [
+            { "name": "id",
+              "schema": {"type": "integer"},
+              "in": "path",
+              "required": true
+            }
+          ],
+          "get": {
+            "tags": ["citing"],
+            "description": "read the citing items",
+            "parameters": [],
+            "responses": {
+              "200": {
+                "description": "OK",
+                "content": {
+                  "application/json":{
+                      "schema":{
+                          "$ref":"#/components/schemas/items"
+                      }
+                  }
+                }
+              },
+              "404": {
+                "description": "Not found"
+              }
+            }
+          },
+          "post": {
+            "tags": ["citing"],
+            "description": "Add a citing item",
+            "parameters": [],
+            "requestBody":{
+              "content": {
+                "application/json":{
+                  "schema":{"$ref":"#/components/schemas/item"}
+                  }
+                }
+            },
+            "responses": {
+                "204": {
+                    "description": "No Content"
+                },
+                "400": {
+                    "description": "Bad Request",
+                    "content": {
+                        "text/plain": {
+                            "schema":{ "type": "string", "description": "The reason for the bad request"}
+                        }
+                    }
+                },
+                "404": {
+                  "description": "Not found"
+                }
+            }
+          }
+        },
+        "/biblio/items/{id}/cited": {
+          "parameters": [
+            { "name": "id",
+              "schema": {"type": "integer"},
+              "in": "path",
+              "required": true
+            }
+          ],
+          "get": {
+            "tags": ["cited"],
+            "description": "read the cited items",
+            "parameters": [],
+            "responses": {
+              "200": {
+                "description": "OK",
+                "content": {
+                  "application/json":{
+                      "schema":{
+                          "$ref":"#/components/schemas/items"
+                      }
+                  }
+                }
+              },
+              "404": {
+                "description": "Not found"
+              }
+            }
+          },
+          "post": {
+            "tags": ["cited"],
+            "description": "Add a citing item",
+            "parameters": [],
+            "requestBody":{
+              "content": {
+                "application/json":{
+                  "schema":{"$ref":"#/components/schemas/item"}
+                  }
+                }
+            },
+            "responses": {
+                "204": {
+                    "description": "No Content"
+                },
+                "400": {
+                    "description": "Bad Request",
+                    "content": {
+                        "text/plain": {
+                            "schema":{ "type": "string", "description": "The reason for the bad request"}
+                        }
+                    }
+                },
+                "404": {
+                  "description": "Not found"
+                }
+            }
+          }
+        }
+    }
+}

@@ -1,0 +1,155 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "ToDo Manager API",
+        "description": "API design for the ToDo Manager application",
+        "version": "1.0"
+    },
+    "components": {
+        "schemas": {
+            "user": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 6,
+                        "maxLength": 20
+                    }
+                },
+                "required": [
+                    "id",
+                    "email",
+                    "password"
+                ]
+            },
+            "task": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "description": {
+                        "type": "string",
+                        "maxLength": 160
+                    },
+                    "important": {
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "private": {
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "projects": {
+                        "type": "array",
+                        "items": {
+                            "enum": [
+                                "Personal",
+                                "WA1_Project",
+                                "WA2_Project",
+                                "DSP_Project"
+                            ]
+                        }
+                    },
+                    "deadline": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "completed": {
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "owner": {
+                        "type": "integer"
+                    },
+                    "assignedTo": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "id",
+                    "description"
+                ]
+            }
+        }
+    },
+    "paths": {
+        "/tasks/public": {
+            "get": {
+                "tags": ["public"],
+                "description": "Read all the public tasks",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "schema":{
+                                    "$ref":"#/components/schemas/task"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tasks/public/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "schema": { "type": "integer" },
+                    "in": "path",
+                    "required": true
+                }
+              ],
+            "get": {
+                "tags": ["task"],
+                "description": "Read a specific public task",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "schema":{
+                                    "$ref":"#/components/schemas/task"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "tags": ["users"],
+                "description": "Read all the users",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json":{
+                                "schema":{
+                                    "$ref":"#/components/schemas/user"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

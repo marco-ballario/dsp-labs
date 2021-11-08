@@ -1,0 +1,51 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://dsp.polito.it/task.json",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "description": {
+            "type": "string",
+            "maxLength": 160
+        },
+        "important": {
+            "type": "boolean",
+            "default": false
+        },
+        "private": {
+            "type": "boolean",
+            "default": true
+        },
+        "projects": {
+            "type": "array",
+            "items": {
+                "enum": [
+                    "Personal",
+                    "WA1_Project",
+                    "WA2_Project",
+                    "DSP_Project"
+                ]
+            }
+        },
+        "deadline": {
+            "type": "string",
+            "format": "date"
+        },
+        "completed": {
+            "type": "boolean",
+            "default": false
+        },
+        "owner": {
+            "type": "integer"
+        },
+        "assignedTo": {
+            "type": "integer"
+        }
+    },
+    "required": [
+        "id",
+        "description"
+    ]
+}
